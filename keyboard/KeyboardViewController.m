@@ -2,8 +2,8 @@
 //  KeyboardViewController.m
 //  keyboard
 //
-//  Created by Ziqiao Chen on 9/14/15.
-//  Copyright (c) 2015 Ziqiao Chen. All rights reserved.
+//  Created by layik on 02/04/2019.
+//  Copyright © 2019 layik. All rights reserved.
 //
 
 #import "KeyboardViewController.h"
@@ -11,27 +11,51 @@
 @interface KeyboardViewController ()
 
 @property (nonatomic, strong) UIButton *nextKeyboardButton;
-@property (nonatomic, strong) UIView *keysView;
-@property (nonatomic, strong) NSLayoutConstraint *keyboardHeightConstraint;
+@property (atomic) int y;
 
 @end
 
 @implementation KeyboardViewController
 
+- (void)updateViewConstraints {
+    [super updateViewConstraints];
+    if(self.y == 0) {
+        self.y = self.y + 30;
+    } else {
+        self.y = self.y + 15;
+    }
+    
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, self.y, 120, 25)];
+    label.text = [NSString stringWithFormat:@"%.2f updateViewConstraints", self.view.frame.size.height];
+    [label sizeToFit];
+    [self.view addSubview:label];
+}
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 15, 120, 25)];
+    label.text = [NSString stringWithFormat:@"%.2f should be 310", self.view.frame.size.height];
+    [label sizeToFit];
+    [self.view addSubview:label];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.keysView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    self.y = 0;
     
-    self.keyboardHeightConstraint = [NSLayoutConstraint constraintWithItem:self.view
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:0.0
-                                                                  constant:310];
-    [self.keyboardHeightConstraint setPriority:UILayoutPriorityDefaultHigh];
-    [self.view addConstraints:@[self.keyboardHeightConstraint]];
+    UIView *keysView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    
+    NSLayoutConstraint *keyboardHeightConstraint = [NSLayoutConstraint
+                                                    constraintWithItem:self.view
+                                                    attribute:NSLayoutAttributeHeight
+                                                    relatedBy:NSLayoutRelationEqual
+                                                    toItem:nil
+                                                    attribute:NSLayoutAttributeNotAnAttribute
+                                                    multiplier:0.0
+                                                    constant:310];
+    [keyboardHeightConstraint setPriority:UILayoutPriorityDefaultHigh];
+    [self.view addConstraints:@[keyboardHeightConstraint]];
     
     self.nextKeyboardButton = [UIButton buttonWithType:UIButtonTypeSystem];
     
@@ -41,20 +65,17 @@
     
     [self.nextKeyboardButton addTarget:self action:@selector(advanceToNextInputMode) forControlEvents:UIControlEventTouchUpInside];
     
-    [self.keysView addSubview:self.nextKeyboardButton];
+    [keysView addSubview:self.nextKeyboardButton];
     
-    NSLayoutConstraint *nextKeyboardButtonLeftSideConstraint = [NSLayoutConstraint constraintWithItem:self.nextKeyboardButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.keysView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0];
-    NSLayoutConstraint *nextKeyboardButtonBottomConstraint = [NSLayoutConstraint constraintWithItem:self.nextKeyboardButton attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.keysView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
-    [self.keysView addConstraints:@[nextKeyboardButtonLeftSideConstraint, nextKeyboardButtonBottomConstraint]];
+    NSLayoutConstraint *nextKeyboardButtonLeftSideConstraint = [NSLayoutConstraint constraintWithItem:self.nextKeyboardButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:keysView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0];
+    NSLayoutConstraint *nextKeyboardButtonBottomConstraint = [NSLayoutConstraint constraintWithItem:self.nextKeyboardButton attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:keysView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
+    [keysView addConstraints:@[nextKeyboardButtonLeftSideConstraint, nextKeyboardButtonBottomConstraint]];
     
-    self.keysView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
-    [self.view addSubview:self.keysView];
+    keysView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+    [self.view addSubview:keysView];
 }
 
 - (void)dealloc {
-    
-    self.keysView = nil;
-    self.keyboardHeightConstraint = nil;
     self.nextKeyboardButton = nil;
 }
 
